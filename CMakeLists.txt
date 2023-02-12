@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Boost COMPONENTS filesystem program_options regex REQUIRED)
+find_package(Boost COMPONENTS program_options regex REQUIRED)
 
 file(GLOB bayan_file_cpp
 "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
@@ -23,9 +23,9 @@ set_target_properties(bayan PROPERTIES
     CXX_STANDARD 17    
     CXX_STANDARD_REQUIRED ON    
 )
-target_link_libraries(bayan Boost::filesystem
-                            Boost::program_options
+target_link_libraries(bayan Boost::program_options
                             Boost::regex)
+                            
 target_include_directories(bayan
     PRIVATE
     include
