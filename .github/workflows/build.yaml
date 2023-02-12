@@ -14,7 +14,6 @@ jobs:
           submodules: true
       - run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
       - run: sudo apt-get install libboost-program-options-dev -y
-      - run: sudo apt-get install libboost-filesystem-dev -y
       - run: sudo apt-get install libboost-regex-dev -y
       - run: cmake .
       - run: cmake --build .
@@ -35,6 +34,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bulk
-          asset_name: bulk
+          asset_path: ./bayan
+          asset_name: bayan
           asset_content_type: application/vnd.debian.binary-package
