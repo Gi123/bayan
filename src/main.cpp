@@ -1,60 +1,90 @@
 #include <boost/program_options.hpp>
 #include <exception>
 #include <iostream>
-#include "../include/bayan.h"
+#include "finder.h"
+
+
+void to_cout(const std::vector<std::string>& v)
+{
+    std::copy(v.begin(), v.end(), std::ostream_iterator<std::string>{
+        std::cout, "\n"});
+}
+
 namespace std
 {
-	std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& vec) {
-		for(const auto& item : vec) {
-			os << item << " ";
-		}
+	std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& vec) 
+	{
+		for (const auto& elem : vec) 
+			os << elem << " ";
+		
 		return os;
 	}
 }
 
-namespace po = boost::program_options;
+namespace bpo = boost::program_options;
 
-int main(int argc, char* argv[]) {
-	try {
-		po::options_description desc{"Options"};
-		desc.add_options()
+int main([[maybe_unused]] int argc, [[maybe_unused]] char const* argv[])
+{
+	try 
+	{
+		size_t depth			= 2;    // how deep to search
+		size_t block_size       = 512;  // block size for hash calculation
+		size_t min_file_size    = 1;    // minimum file size to be processed
+
+		bpo::options_description desc_opt{ "Options" };
+		desc_opt.add_options()
 			("help,h", "Help screen")
-			("include_dir,I", po::value<std::vector<std::string>>()->multitoken(), "Include directories to scan")
-			("exclude_dir,E", po::value<std::vector<std::string>>()->multitoken()->default_value(std::vector<std::string>{}), "Exclude directories to exclude")
-			("depth,D", po::value<size_t>()->default_value(2), "Depth to scan")
-			("min_file_size,S", po::value<uintmax_t>()->default_value(1), "Minimum file size")
-			("hash,H", po::value<std::string>()->default_value("crc32"), "A hashing algorithm crc32/md5/sha1")
-			("file_masks", po::value<std::vector<std::string>>()->multitoken()->default_value(std::vector<std::string>{}), "Mask for files to scans")
-			("block_size", po::value<size_t>()->default_value(512), "Block size in bytes")
-            ("unreg", "Unrecognized options");
+			("dirs,D", bpo::value<std::vector<std::string>>()->multitoken(), "Directories to scan")
+			("skip_dirs,S", bpo::value<std::vector<std::string>>()->multitoken()->default_value(std::vector<std::string>{}), "Skip directories to scan")
+			("depth,d", bpo::value<size_t>(&depth), "Depth to scan")
+			("min_file_size,M", bpo::value<size_t>(&min_file_size), "Minimum file size")
+			("hash,H", bpo::value<std::string>()->default_value("crc32"), "A hashing algorithm crc32/md5/sha1")
+			("file_masks", bpo::value<std::vector<std::string>>()->multitoken()->default_value(std::vector<std::string>{}), "Mask for files to scans")
+			("block_size", bpo::value<size_t>(&block_size), "Block size in bytes")
+			("unreg", "Unrecognized options");
 
-		po::variables_map vm;
-		po::store(parse_command_line(argc, argv, desc), vm);
-		po::notify(vm);
+		bpo::command_line_parser parser{ argc, argv };
+		parser.options(desc_opt).allow_unregistered().style(
+		bpo::command_line_style::default_style | bpo::command_line_style::allow_slash_for_short);
+		bpo::parsed_options parsed_options = parser.run();
+		
+		bpo::variables_map vm;
+		bpo::store(parsed_options, vm);
+		bpo::notify(vm);
 
-		if(vm.count("help"))
-			std::cout << desc << '\n';
-		else if(vm.count("include_dir")) {
-			SearchDuplicate dup(vm["include_dir"].as<std::vector<std::string> >(),
-								vm["exclude_dir"].as<std::vector<std::string> >(),
-								vm["file_masks"].as<std::vector<std::string> >(),
-								vm["block_size"].as<size_t>(),
-								vm["depth"].as<size_t>() + 1,
-								vm["min_file_size"].as<uintmax_t>(),
-								vm["hash"].as<std::string>()
-			);
-			auto dups = dup.map_find_duplicates();
-			for(const auto& i : dups) {
+		if (vm.count("help"))
+			std::cout << desc_opt << '\n';
+		else if (vm.count("unreg"))
+			to_cout(collect_unrecognized(parsed_options.options, bpo::exclude_positional)); 
+		else if (vm.count("include_dir")) 
+		{
+			FindDuplicate findDuplicate(			
+				vm["dirs"].as<std::vector<std::string> >(),
+				vm["skip_dirs"].as<std::vector<std::string> >(),
+				vm["file_masks"].as<std::vector<std::string> >(),
+				vm["block_size"].as<size_t>(),
+				vm["depth"].as<size_t>() + 1,
+				vm["min_file_size"].as<uintmax_t>(),
+				vm["hash"].as<std::string>());
+
+			auto duplicates = findDuplicate.map_find_duplicates();
+			for (const auto& i: duplicates)
+			{
 				std::cout << i.first << '\n';
-				for(const auto& j : i.second) {
+				for (const auto& j : i.second) 
+				{
 					std::cout << j << '\n';
 				}
 				std::cout << std::endl;
 			}
-
 		}
 	}
-	catch(const po::error& ex) {
+	catch (const bpo::error& ex) 
+	{
 		std::cerr << ex.what() << '\n';
 	}
+
+	return EXIT_SUCCESS;
 }
+
+
