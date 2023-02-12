@@ -26,20 +26,20 @@ public:
 	void set_skip_dirs(std::vector<std::string> _dirs);
 private:
   
-	std::vector<std::filesystem::path> dirs;				// directories to scan
-	std::vector<std::filesystem::path> skip_dirs;		// exclusion Directories	
-	std::vector<boost::regex> vec_regex_filemasks;	// scan masks	
-	size_t block_size;						// hash block size to compare
-	size_t scan_depth;						// maximum scanning depth	
-	uintmax_t min_file_size;				// minimum file size to scan	
-	std::vector<CompareFileHash> info_scan_files;		// information on scanned files	
-	std::unordered_set<std::string> files_canonical;	// duplicate Information	
-	IHasher* hasher;						// class for caching files	
-	void set_hasher(std::string hash_str);	// setting for a class objec	
-	bool excluded_path(std::filesystem::path p);			// checking for Excluded Paths	
-	bool filename_with_filemask(const std::string& filename);	// mask check	
-	void add_file(std::filesystem::path p);				// adding a file to scan	
-	void add_filtered_file(std::filesystem::path p);		// adding a file to scan with a mask
-	void scan_path(std::filesystem::path p, size_t depth);	// recursive Scan
-	void search();							// starting a scan
+	std::vector<std::filesystem::path> dirs;				
+	std::vector<std::filesystem::path> skip_dirs;		
+	std::vector<boost::regex> vec_regex_filemasks;	
+	size_t block_size;						
+	size_t scan_depth;						
+	uintmax_t min_file_size;				
+	std::vector<CompareFileHash> info_scan_files;		
+	std::unordered_set<std::string> files_canonical;	
+	IHasher* hasher;						
+	void set_hasher(std::string hash_str);	
+	bool excluded_path(std::filesystem::path p);			
+	bool filename_with_filemask(const std::string& filename);	
+	void add_file(std::filesystem::path p);				
+	void add_filtered_file(std::filesystem::path p);		
+	void scan_path(std::filesystem::path p, size_t depth);	
+	void search();							
 };

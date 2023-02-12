@@ -27,9 +27,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char const* argv[])
 {
 	try 
 	{
-		size_t depth			= 2;    // how deep to search
-		size_t block_size       = 512;  // block size for hash calculation
-		size_t min_file_size    = 1;    // minimum file size to be processed
+		size_t depth			= 2;    
+		size_t block_size       = 512;  
+		size_t min_file_size    = 1;    
 
 		bpo::options_description desc_opt{ "Options" };
 		desc_opt.add_options()

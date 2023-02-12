@@ -16,7 +16,7 @@ class CompareFileHash
 {
 public:
 	bool in_result = false;	
-	const size_t block_count;						// Number of hash blocks of the file
+	const size_t block_count;					
 
 	CompareFileHash(std::filesystem::path path, uintmax_t size, uintmax_t hash_blocksize, IHasher* hasher) :
 		path(path), 
@@ -25,21 +25,21 @@ public:
 		hasher(hasher),
 		block_count((size + hash_blocksize - 1) / hash_blocksize) {};
 
-	bool operator==(const CompareFileHash& other) const;	// const comparsion for unordered_set
-	size_t get_hash_data_size() const;				// getter for size of calculated hash
-	uintmax_t get_file_size() const;				// getter for filesize
-	std::filesystem::path get_path() const;						// getter for path
-	void open_handle();								// Open a file and jump to the location of the last uncommitted block	
-	void close_handle();							// Close file
-	std::unique_ptr<char[]> get_next_block();		// Get the next block from a file
-	void calc_next_hash();							// Calculate the next hash block
-	HashBlock calc_hash_block(size_t addr);			// Calculate hash up to block N inclusive	
-	HashBlock get_hash_block(size_t addr);			// get N-th HashBlock	
-	bool equal_hash_file(CompareFileHash& other);	// Compare by hash with other File
+	bool operator==(const CompareFileHash& other) const;	
+	size_t get_hash_data_size() const;				
+	uintmax_t get_file_size() const;				
+	std::filesystem::path get_path() const;						
+	void open_handle();								
+	void close_handle();							
+	std::unique_ptr<char[]> get_next_block();		
+	void calc_next_hash();							
+	HashBlock calc_hash_block(size_t addr);			
+	HashBlock get_hash_block(size_t addr);				
+	bool equal_hash_file(CompareFileHash& other);	
 private:
 	std::filesystem::path path;
 	uintmax_t file_size;	
-	std::vector<HashBlock> hash_data;				// Вектор с информацией по рассчитанным хэшам 
+	std::vector<HashBlock> hash_data;				
 	uintmax_t block_size;
 	IHasher* hasher;
 	std::unique_ptr<std::ifstream> file_handle;
